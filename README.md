@@ -2,7 +2,8 @@
 [![build status](https://github.com/Tait1337/chat/workflows/build/badge.svg)](https://github.com/Tait1337/chat/actions)
 [![quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Tait1337_chat&metric=alert_status)](https://sonarcloud.io/dashboard?id=Tait1337_chat)
 [![license](https://img.shields.io/github/license/Tait1337/chat)](LICENSE)
-Simple Chat Application with Web Sockets
+
+Simple Chat Application that makes use of Web Sockets protocol.
 
 Chat with all your friends in a Chatroom. Write public and private messages.
 
