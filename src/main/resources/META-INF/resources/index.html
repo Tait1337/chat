@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Chat</title>
+    </head>
+    <style>
+        body {
+            font-family: Monospace;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 6em;
+        }
+
+        main p {
+            font-size: 2em;
+        }
+        #logout-form {
+            display:none;
+        }
+        #chat-form {
+            display:none;
+        }
+        #chat-form textarea {
+            width: 75%;
+            height: 20em;
+            overflow: scroll;
+        }
+        #chat-form input {
+            width: 70%;
+        }
+        #chat-form button {
+            width: 4%;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0px;
+            right: 1em;
+        }
+    </style>
+    <script>
+        var username;
+        var clientWebSocket;
+
+        var protocol = window.location.protocol === 'https' ? 'wss://' : 'ws://';
+        var host = window.location.host;
+        var pathname = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        var endpoint = 'chat';
+        var url = protocol + host + pathname + endpoint;
+
+        function join(){
+            var loginform = document.getElementById('login-form');
+            var logoutform = document.getElementById('logout-form');
+            var chatform = document.getElementById('chat-form');
+            var welcome = document.getElementById('welcome');
+            loginform.style.display='none';
+            logoutform.style.display='block';
+            chatform.style.display='block';
+            chatform.msg.focus();
+            username = loginform.username.value;
+            welcome.innerHTML='Welcome, ' + username;
+            clientWebSocket = new WebSocket(url);
+            clientWebSocket.onmessage = function(conn) {
+                var msg = JSON.parse(conn.data);
+                chatform.chat.value += '\n['+ new Date(msg.timestamp).toLocaleString() + '] ' + msg.sender + ': ' + msg.text;
+                chatform.chat.scrollTop = chatform.chat.scrollHeight;
+            }
+            clientWebSocket.onopen = function() {
+                var msg = { timestamp: Date.now(), sender: username, text: '== Joined ==' };
+                clientWebSocket.send(JSON.stringify(msg));
+            }
+        }
+
+        function leave(){
+            var msg = { timestamp: Date.now(), sender: username, text: '== Left ==' };
+            clientWebSocket.send(JSON.stringify(msg));
+            clientWebSocket.close();
+            location.reload();
+        }
+        window.onbeforeunload = function(e) { leave(); };
+
+        function sendMsg(){
+            var chatform = document.getElementById('chat-form');
+            var msg = { timestamp: Date.now(), sender: username, text: chatform.msg.value };
+            clientWebSocket.send(JSON.stringify(msg));
+            chatform.msg.value = '';
+            chatform.msg.focus();
+        }
+    </script>
+<body>
+    <header>
+        <h1>Chat</h1>
+    </header>
+    <main>
+        <p>¯\_(ツ)_/¯</p>
+        <p id="welcome">What's your name?</p>
+        <form id="login-form" onsubmit="join(); return false;">
+            <input name="username" type="text" placeholder="Username" required autofocus>
+            <button type="submit">Join</button>
+        </form>
+
+        <form id="logout-form" onsubmit="leave(); return false;">
+            <button type="submit">Leave</button>
+        </form>
+
+        <br><br><br>
+        <form id="chat-form" onsubmit="sendMsg(); return false;">
+            <textarea id="chat" readonly></textarea><br>
+            <input name="msg" type="text" placeholder="Message" required>
+            <button type="submit">Send</button>
+        </form>
+
+    </main>
+    <footer>
+        <p>Copyright © 2021 Oliver Tribess</p>
+    </footer>
+</body>
+</html>
