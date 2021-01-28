@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	kotlin("jvm") version "1.4.21"
 	kotlin("plugin.spring") version "1.4.21"
+	id("org.sonarqube") version "3.0"
 }
 
 group = "de.clique.westwood.chat"
@@ -35,4 +36,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+sonarqube {
+	properties {
+		property("sonar.projectKey", "Tait1337_chat")
+		property("sonar.organization", "tait1337")
+		property("sonar.host.url", "https://sonarcloud.io")
+	}
 }
