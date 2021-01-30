@@ -36,7 +36,8 @@ var pathname = window.location.pathname.substring(0, window.location.pathname.la
 var endpoint = 'chat';
 var url = protocol + host + pathname + endpoint;
 
-document.getElementById('login-form').addEventListener('submit', function(event) {
+document.getElementById('login-form').onsubmit = function(event) {
+    event.preventDefault();
     var loginform = document.getElementById('login-form');
     var logoutform = document.getElementById('logout-form');
     var chatform = document.getElementById('chat-form');
@@ -58,9 +59,7 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         var msg = new Message(ParticipantMessage.TYPE, Date.now(), username, JSON.stringify(payload));
         clientWebSocket.send(JSON.stringify(msg));
     }
-    event.preventDefault();
-    return false;
-}, false);
+};
 
 function handleMsg(msg) {
     var payload = JSON.parse(msg.payload);
@@ -94,6 +93,7 @@ function getParticipantName(participantId){
 }
 
 document.getElementById('logout-form').onsubmit = function(event) {
+    event.preventDefault();
     var payload = new ParticipantMessage(ParticipantMessage.ACTION_LEAVE, {username:username});
     var msg = new Message(ParticipantMessage.TYPE, Date.now(), username, JSON.stringify(payload));
     clientWebSocket.send(JSON.stringify(msg));
@@ -103,6 +103,7 @@ document.getElementById('logout-form').onsubmit = function(event) {
 window.onbeforeunload = function(e) { leave(); };
 
 document.getElementById('chat-form').onsubmit = function(event) {
+    event.preventDefault();
     var chatform = document.getElementById('chat-form');
     var payload = new ChatMessage(chatform.recipient.value, chatform.msg.value);
     var msg = new Message(ChatMessage.TYPE, Date.now(), username, JSON.stringify(payload));
@@ -110,5 +111,4 @@ document.getElementById('chat-form').onsubmit = function(event) {
     chatform.msg.value = '';
     chatform.msg.focus();
     event.preventDefault();
-    return false;
 }
