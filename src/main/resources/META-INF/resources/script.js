@@ -36,7 +36,7 @@ var pathname = window.location.pathname.substring(0, window.location.pathname.la
 var endpoint = 'chat';
 var url = protocol + host + pathname + endpoint;
 
-document.getElementById('login-form').onsubmit = function(event) {
+document.getElementById('login-form').addEventListener('submit', function(event) {
     var loginform = document.getElementById('login-form');
     var logoutform = document.getElementById('logout-form');
     var chatform = document.getElementById('chat-form');
@@ -60,7 +60,7 @@ document.getElementById('login-form').onsubmit = function(event) {
     }
     event.preventDefault();
     return false;
-}
+}, false);
 
 function handleMsg(msg) {
     var payload = JSON.parse(msg.payload);
