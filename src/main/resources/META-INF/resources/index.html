@@ -170,17 +170,17 @@
     <main>
         <h2 id="welcome-icon">¯\_(ツ)_/¯</h2>
         <h2 id="welcome-text">What's your name?</h2>
-        <form id="login-form" onsubmit="join(); return false;">
+        <form id="login-form" onsubmit="join(); event.preventDefault();">
             <input name="username" type="text" placeholder="Username" minlength="3" required autofocus>
-            <button type="submit">Join</button>
+            <button type="button">Join</button>
         </form>
 
-        <form id="logout-form" onsubmit="leave(); return false;">
+        <form id="logout-form" onsubmit="leave(); event.preventDefault();">
             <button type="submit">Leave</button>
         </form>
 
         <br><br><br>
-        <form id="chat-form" onsubmit="sendMsg(); return false;">
+        <form id="chat-form" onsubmit="sendMsg(); event.preventDefault();">
             <textarea id="chat" readonly></textarea>
             <select id="recipient"></select>
             <input name="msg" type="text" placeholder="Message" required>
