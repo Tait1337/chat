@@ -40,9 +40,11 @@ Navigate to http://localhost:8080.
 
 ![Main Page](screenshot_index.png)
 
+![Main Page](screenshot_game.png)
+
 ### Configuration
 
-Within [src/main/resources/application.properties](application.properties) you can modify settings.
+Within [application.properties](src/main/resources/application.properties) you can modify settings.
 
 ## Running the tests
 

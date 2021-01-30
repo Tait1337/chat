@@ -5,43 +5,83 @@
         <title>Chat</title>
     </head>
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
             font-family: Monospace;
+        }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: auto;
+            grid-template-rows: 120px auto 20px;
+        }
+
+        header {
+            justify-self: center;
+        }
+        main {
+            justify-self: center;
             text-align: center;
         }
+        footer {
+            justify-self: end;
+        }
+
         header h1 {
             font-size: 6em;
         }
-
-        main p {
+        main h2 {
             font-size: 2em;
         }
-        #logout-form {
-            display:none;
-        }
-        #chat-form {
-            display:none;
-        }
-        #chat-form textarea {
-            width: 75%;
-            height: 20em;
-            overflow: scroll;
-        }
-        #chat-form input {
-            width: 70%;
-        }
-        #chat-form button {
-            width: 4%;
+
+        #logout-form, #chat-form {
+            display: none;
         }
 
-        footer {
-            position: absolute;
-            bottom: 0px;
-            right: 1em;
+        #chat-form {
+            grid-template-columns: 12em auto 5em;
+            gap: 0.5em;
+        }
+        #chat-form textarea {
+            height: 40vh;
+            width: 75vw;
+            overflow: scroll;
+            grid-column-end: span 3;
         }
     </style>
     <script>
+        class Message {
+            constructor(type, timestamp, sender, payload) {
+                this.type = type;
+                this.timestamp = timestamp;
+                this.sender = sender;
+                this.payload = payload;
+            }
+        }
+
+        class ChatMessage {
+            static TYPE = 'CHAT';
+            constructor(receiver, text) {
+                this.receiver = receiver;
+                this.text = text;
+            }
+        }
+
+        class ParticipantMessage {
+            static TYPE = 'PARTICIPANT';
+            static ACTION_JOIN = 'JOIN';
+            static ACTION_LEAVE = 'LEAVE';
+
+            constructor(action, user) {
+                this.action = action;
+                this.user = user;
+            }
+        }
+
         var username;
+
         var clientWebSocket;
 
         var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
@@ -50,40 +90,74 @@
         var endpoint = 'chat';
         var url = protocol + host + pathname + endpoint;
 
-        function join(){
+        function join() {
             var loginform = document.getElementById('login-form');
             var logoutform = document.getElementById('logout-form');
             var chatform = document.getElementById('chat-form');
-            var welcome = document.getElementById('welcome');
+            var welcomeIcon = document.getElementById('welcome-icon');
+            var welcomeText = document.getElementById('welcome-text');
             loginform.style.display='none';
             logoutform.style.display='block';
-            chatform.style.display='block';
+            chatform.style.display='grid';
             chatform.msg.focus();
             username = loginform.username.value;
-            welcome.innerHTML='Welcome, ' + username;
+            welcomeIcon.innerHTML='(^̮^)';
+            welcomeText.innerHTML='Welcome, ' + username;
             clientWebSocket = new WebSocket(url);
             clientWebSocket.onmessage = function(conn) {
-                var msg = JSON.parse(conn.data);
-                chatform.chat.value += '\n['+ new Date(msg.timestamp).toLocaleString() + '] ' + msg.sender + ': ' + msg.text;
-                chatform.chat.scrollTop = chatform.chat.scrollHeight;
+                handleMsg(JSON.parse(conn.data));
             }
             clientWebSocket.onopen = function() {
-                var msg = { timestamp: Date.now(), sender: username, text: '== Joined ==' };
+                var payload = new ParticipantMessage(ParticipantMessage.ACTION_JOIN, {username:username});
+                var msg = new Message(ParticipantMessage.TYPE, Date.now(), username, JSON.stringify(payload));
                 clientWebSocket.send(JSON.stringify(msg));
             }
         }
 
-        function leave(){
-            var msg = { timestamp: Date.now(), sender: username, text: '== Left ==' };
+        function handleMsg(msg) {
+            var payload = JSON.parse(msg.payload);
+            var chatform = document.getElementById('chat-form');
+            if (msg.type === ChatMessage.TYPE) {
+                chatform.chat.value += '\n['+ new Date(msg.timestamp).toLocaleString() + '] ' + getParticipantName(msg.sender) + ': ' + payload.text;
+            } else if (msg.type === ParticipantMessage.TYPE) {
+                var recipientOptions = '';
+                for (var key in payload.user) {
+                  recipientOptions+='<option value="'+key+'">'+payload.user[key]+'</option>';
+                }
+                if (payload.action === ParticipantMessage.ACTION_JOIN){
+                    document.getElementById('recipient').innerHTML = recipientOptions;
+                    chatform.chat.value += '\n['+ new Date(msg.timestamp).toLocaleString() + '] ' + getParticipantName(msg.sender) + ' has joined the chat';
+                } else if (payload.action === ParticipantMessage.ACTION_LEAVE){
+                    chatform.chat.value += '\n['+ new Date(msg.timestamp).toLocaleString() + '] ' + getParticipantName(msg.sender) + ' has left the chat';
+                    document.getElementById('recipient').innerHTML = recipientOptions;
+                }
+            }
+            chatform.chat.scrollTop = chatform.chat.scrollHeight;
+        }
+
+        function getParticipantName(participantId){
+            var recipient = document.getElementById('recipient');
+            for (var i = 0; i < recipient.length; i++){
+                var option = recipient.options[i];
+                if (option.value === participantId){
+                    return option.text;
+                }
+            }
+        }
+
+        function leave() {
+            var payload = new ParticipantMessage(ParticipantMessage.ACTION_LEAVE, {username:username});
+            var msg = new Message(ParticipantMessage.TYPE, Date.now(), username, JSON.stringify(payload));
             clientWebSocket.send(JSON.stringify(msg));
             clientWebSocket.close();
             location.reload();
         }
         window.onbeforeunload = function(e) { leave(); };
 
-        function sendMsg(){
+        function sendMsg() {
             var chatform = document.getElementById('chat-form');
-            var msg = { timestamp: Date.now(), sender: username, text: chatform.msg.value };
+            var payload = new ChatMessage(chatform.recipient.value, chatform.msg.value);
+            var msg = new Message(ChatMessage.TYPE, Date.now(), username, JSON.stringify(payload));
             clientWebSocket.send(JSON.stringify(msg));
             chatform.msg.value = '';
             chatform.msg.focus();
@@ -94,10 +168,10 @@
         <h1>Chat</h1>
     </header>
     <main>
-        <p>¯\_(ツ)_/¯</p>
-        <p id="welcome">What's your name?</p>
+        <h2 id="welcome-icon">¯\_(ツ)_/¯</h2>
+        <h2 id="welcome-text">What's your name?</h2>
         <form id="login-form" onsubmit="join(); return false;">
-            <input name="username" type="text" placeholder="Username" required autofocus>
+            <input name="username" type="text" placeholder="Username" minlength="3" required autofocus>
             <button type="submit">Join</button>
         </form>
 
@@ -107,11 +181,11 @@
 
         <br><br><br>
         <form id="chat-form" onsubmit="sendMsg(); return false;">
-            <textarea id="chat" readonly></textarea><br>
+            <textarea id="chat" readonly></textarea>
+            <select id="recipient"></select>
             <input name="msg" type="text" placeholder="Message" required>
             <button type="submit">Send</button>
         </form>
-
     </main>
     <footer>
         <p>Copyright © 2021 Oliver Tribess</p>
