@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Monospace;
+}
+
+body {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 120px auto 20px;
+}
+
+header {
+    justify-self: center;
+}
+main {
+    justify-self: center;
+    text-align: center;
+}
+footer {
+    justify-self: end;
+}
+
+header h1 {
+    font-size: 6em;
+}
+main h2 {
+    font-size: 2em;
+}
+
+#logout-form, #chat-form {
+    display: none;
+}
+
+#chat-form {
+    grid-template-columns: 12em auto 5em;
+    gap: 0.5em;
+}
+#chat-form textarea {
+    height: 40vh;
+    width: 75vw;
+    overflow: scroll;
+    grid-column-end: span 3;
+}
