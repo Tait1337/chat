@@ -1,3 +1,4 @@
+alert('parsing script');
 class Message {
     constructor(type, timestamp, sender, payload) {
         this.type = type;
