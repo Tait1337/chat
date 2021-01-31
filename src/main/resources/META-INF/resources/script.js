@@ -37,29 +37,24 @@ var endpoint = 'chat';
 var url = protocol + host + pathname + endpoint;
 
 document.getElementById('login-form').onsubmit = function(event) {
+    alert('start');
     event.preventDefault();
-alert('step 1');
     var loginform = document.getElementById('login-form');
     var logoutform = document.getElementById('logout-form');
     var chatform = document.getElementById('chat-form');
     var welcomeIcon = document.getElementById('welcome-icon');
     var welcomeText = document.getElementById('welcome-text');
-alert('step 2');
     loginform.style.display='none';
     logoutform.style.display='block';
     chatform.style.display='grid';
-alert('step 3');
     chatform.msg.focus();
     username = loginform.username.value;
-alert('step 4');
     welcomeIcon.innerHTML='(^̮^)';
     welcomeText.innerHTML='Welcome, ' + username;
-alert('step 5');
     clientWebSocket = new WebSocket(url);
     clientWebSocket.onmessage = function(conn) {
         handleMsg(JSON.parse(conn.data));
     }
-alert('step 6');
     clientWebSocket.onopen = function() {
         alert('step 7');
         var payload = new ParticipantMessage(ParticipantMessage.ACTION_JOIN, {username:username});
@@ -67,7 +62,7 @@ alert('step 6');
         alert('step 8');
         clientWebSocket.send(JSON.stringify(msg));
     }
-    alert('successful');
+    alert('end');
 };
 
 function handleMsg(msg) {
