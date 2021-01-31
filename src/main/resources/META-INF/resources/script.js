@@ -37,9 +37,7 @@ var pathname = window.location.pathname.substring(0, window.location.pathname.la
 var endpoint = 'chat';
 var url = protocol + host + pathname + endpoint;
 
-var loginform = document.getElementById('login-form');
-alert('loginform:'+loginform);
-loginform.onsubmit = function(event) {
+document.getElementById('login-form').onsubmit = function(event) {
     alert('start');
     event.preventDefault();
     var loginform = document.getElementById('login-form');
