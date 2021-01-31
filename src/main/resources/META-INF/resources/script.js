@@ -36,7 +36,9 @@ var pathname = window.location.pathname.substring(0, window.location.pathname.la
 var endpoint = 'chat';
 var url = protocol + host + pathname + endpoint;
 
-document.getElementById('login-form').onsubmit = function(event) {
+var loginform = document.getElementById('login-form');
+alert('loginform:'+loginform);
+loginform.onsubmit = function(event) {
     alert('start');
     event.preventDefault();
     var loginform = document.getElementById('login-form');
@@ -56,13 +58,10 @@ document.getElementById('login-form').onsubmit = function(event) {
         handleMsg(JSON.parse(conn.data));
     }
     clientWebSocket.onopen = function() {
-        alert('step 7');
         var payload = new ParticipantMessage(ParticipantMessage.ACTION_JOIN, {username:username});
         var msg = new Message(ParticipantMessage.TYPE, Date.now(), username, JSON.stringify(payload));
-        alert('step 8');
         clientWebSocket.send(JSON.stringify(msg));
     }
-    alert('end');
 };
 
 function handleMsg(msg) {
