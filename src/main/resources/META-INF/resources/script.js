@@ -59,6 +59,7 @@ document.getElementById('login-form').onsubmit = function(event) {
         var msg = new Message(ParticipantMessage.TYPE, Date.now(), username, JSON.stringify(payload));
         clientWebSocket.send(JSON.stringify(msg));
     }
+    alert('successful');
 };
 
 function handleMsg(msg) {
