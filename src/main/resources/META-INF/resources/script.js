@@ -1,4 +1,3 @@
-alert('parsing script');
 class Message {
     constructor(type, timestamp, sender, payload) {
         this.type = type;
@@ -9,7 +8,7 @@ class Message {
 }
 
 class ChatMessage {
-    static TYPE = 'CHAT';
+    static get TYPE() { return 'CHAT'; }
     constructor(receiver, text) {
         this.receiver = receiver;
         this.text = text;
@@ -17,10 +16,9 @@ class ChatMessage {
 }
 
 class ParticipantMessage {
-    static TYPE = 'PARTICIPANT';
-    static ACTION_JOIN = 'JOIN';
-    static ACTION_LEAVE = 'LEAVE';
-
+    static get TYPE() { return 'PARTICIPANT'; }
+    static get ACTION_JOIN() { return 'JOIN'; }
+    static get ACTION_LEAVE() { return 'LEAVE'; }
     constructor(action, user) {
         this.action = action;
         this.user = user;
@@ -38,7 +36,6 @@ var endpoint = 'chat';
 var url = protocol + host + pathname + endpoint;
 
 document.getElementById('login-form').onsubmit = function(event) {
-    alert('start');
     event.preventDefault();
     var loginform = document.getElementById('login-form');
     var logoutform = document.getElementById('logout-form');
