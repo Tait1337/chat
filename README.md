@@ -48,7 +48,7 @@ Within [application.properties](src/main/resources/application.properties) you c
 
 ## Running the tests
 
-No Tests.
+No Tests exist.
 
 ## Deployment
 
