@@ -13,7 +13,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Install Java JDK 11 or higher.
+Install Java JDK 17 or higher.
 
 ```
 https://openjdk.java.net/install/index.html
