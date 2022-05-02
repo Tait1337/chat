@@ -1,5 +1,5 @@
 ############################################################################
-# Adopt Open JDK 11 Build (176 MB)
+# Eclipse Temurin Open JRE 17 Build
 #
 # build from project root dir with: docker build -t chat:1.0.0-SNAPSHOT .
 # run with: docker run -p 8080:8080 -d chat:1.0.0-SNAPSHOT
